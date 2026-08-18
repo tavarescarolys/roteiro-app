@@ -61,8 +61,10 @@ CLASSIFICAÇÃO E FORMATO — siga exatamente, sem exceções:
 - Uma linha por bloco.
 - PROIBIDO: títulos com #, texto em **negrito**, linhas com ---, metadados como "Duração estimada", "Palavras aproximadas" ou qualquer linha que não seja fala ou orientação.
 
-Perfil de voz do criador:
+PERFIL DE VOZ DO CRIADOR — siga à risca:
 ${voiceProfile.profile_text}
+
+INSTRUÇÃO CRÍTICA: O roteiro deve soar como se essa pessoa tivesse escrito ela mesma. Use as expressões próprias dela, o ritmo de frase dela, a forma como ela inicia e conclui ideias. Se o perfil lista frases de referência, use construções similares. Um leitor que conhece essa pessoa deve reconhecer a voz imediatamente.
 
 Briefing:
 ${theme}

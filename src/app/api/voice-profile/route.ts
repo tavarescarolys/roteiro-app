@@ -17,7 +17,26 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: 'user',
-          content: `Analise o texto abaixo e extraia o perfil de comunicação do falante: tom de voz, vocabulário predominante, ritmo e expressões características. Seja conciso e direto.\n\nTexto:\n${transcription}`,
+          content: `Você vai analisar a transcrição de áudio de um criador de conteúdo brasileiro e extrair o perfil de voz REAL dele — não descrições genéricas, mas padrões concretos e replicáveis.
+
+Transcrição:
+${transcription}
+
+Extraia e documente exatamente:
+
+1. EXPRESSÕES PRÓPRIAS: palavras, gírias, interjeições e frases que essa pessoa usa e que são características dela. Liste com exemplos diretos do texto.
+
+2. RITMO DE FRASE: as frases são curtas e diretas? Longas e explicativas? Ela faz pausas com "né", "sabe", "tipo"? Usa reticências no raciocínio?
+
+3. COMO INICIA IDEIAS: como ela começa um argumento ou ponto novo? Com pergunta? Com afirmação? Com exemplo?
+
+4. COMO CONCLUI: como ela fecha um raciocínio? Com conselho direto? Com pergunta reflexiva? Com dado?
+
+5. NÍVEL DE INTIMIDADE: ela trata o ouvinte como amigo, como aluno, como igual? Usa "você", "a gente", "vocês"?
+
+6. PADRÕES A IMITAR: liste 3 a 5 frases ou construções extraídas diretamente da transcrição que devem ser usadas como referência de tom e estilo ao escrever roteiros para essa pessoa.
+
+Seja específico. Use exemplos reais do texto. Não use adjetivos genéricos como "descontraído" ou "informal" sem mostrar o que isso significa na prática.`,
         },
       ],
     })
