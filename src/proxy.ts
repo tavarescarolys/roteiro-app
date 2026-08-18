@@ -1,6 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+const THREE_MONTHS_MS = 3 * 30 * 24 * 60 * 60 * 1000
+
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
@@ -26,15 +28,24 @@ export async function proxy(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   const { pathname } = request.nextUrl
 
-  const publicPaths = ['/login', '/register']
+  const publicPaths = ['/login', '/register', '/acesso-encerrado']
   const isPublic = publicPaths.some(p => pathname.startsWith(p))
 
   if (!user && !isPublic) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  if (user && isPublic) {
+  if (user && (pathname === '/login' || pathname === '/register')) {
     return NextResponse.redirect(new URL('/generator', request.url))
+  }
+
+  // Verifica expiração de 3 meses
+  if (user && !isPublic) {
+    const createdAt = new Date(user.created_at).getTime()
+    const expired = Date.now() - createdAt > THREE_MONTHS_MS
+    if (expired && pathname !== '/acesso-encerrado') {
+      return NextResponse.redirect(new URL('/acesso-encerrado', request.url))
+    }
   }
 
   return supabaseResponse
