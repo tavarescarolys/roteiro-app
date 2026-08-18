@@ -79,9 +79,7 @@ export default function HistoryPage() {
     <div style={{ minHeight: '100vh', background: D.bg, color: D.text, fontFamily: 'Montserrat, sans-serif' }}>
       <nav style={{ background: D.card, borderBottom: `1px solid ${D.border}`, padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 56 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ background: '#fff', borderRadius: 6, padding: '4px 8px' }}>
-            <span style={{ fontWeight: 900, fontSize: 10, color: '#17151A', letterSpacing: 0.5, textTransform: 'uppercase' }}>DO BOLSO PRA TELA</span>
-          </div>
+          <img src="/logo.png" alt="Do Bolso pra Tela" style={{ height: 32, objectFit: 'contain' }} />
           <span style={{ color: D.muted, fontSize: 12 }}>/ Histórico</span>
         </div>
         <Link href="/generator" style={{ color: D.muted, fontSize: 13, textDecoration: 'none' }}>← Voltar</Link>

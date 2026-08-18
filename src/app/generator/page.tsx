@@ -142,9 +142,7 @@ export default function GeneratorPage() {
       {/* Nav */}
       <nav className="no-print" style={{ background: D.card, borderBottom: `1px solid ${D.border}`, padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 56 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ background: '#fff', borderRadius: 6, padding: '4px 8px' }}>
-            <span style={{ fontWeight: 900, fontSize: 10, color: '#17151A', letterSpacing: 0.5, textTransform: 'uppercase' }}>DO BOLSO PRA TELA</span>
-          </div>
+          <img src="/logo.png" alt="Do Bolso pra Tela" style={{ height: 32, objectFit: 'contain' }} />
           <span style={{ color: D.muted, fontSize: 12 }}>/ Roteiros</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 20, fontSize: 13 }}>

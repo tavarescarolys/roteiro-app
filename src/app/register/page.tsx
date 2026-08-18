@@ -42,9 +42,7 @@ export default function RegisterPage() {
 
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <div style={{ display: 'inline-block', background: '#fff', borderRadius: 12, padding: '10px 18px' }}>
-            <span style={{ fontWeight: 900, fontSize: 13, color: '#17151A', letterSpacing: 1, textTransform: 'uppercase' }}>DO BOLSO PRA TELA</span>
-          </div>
+          <img src="/logo.png" alt="Do Bolso pra Tela" style={{ height: 60, objectFit: 'contain' }} />
           <p style={{ color: D.muted, fontSize: 12, marginTop: 8, letterSpacing: 2, textTransform: 'uppercase' }}>Gerador de Roteiros</p>
         </div>
 
