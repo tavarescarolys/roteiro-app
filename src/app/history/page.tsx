@@ -14,11 +14,16 @@ type Script = {
   created_at: string
 }
 
+const D = {
+  bg: '#17151A', card: '#211F24', border: '#2e2b33',
+  text: '#F2EFE9', muted: '#8a8490', red: '#B7022C',
+}
+
 const EMOTION_STYLES: Record<string, { bg: string; color: string }> = {
-  URGÊNCIA: { bg: '#FCEBEB', color: '#501313' },
-  NEUTRO:   { bg: '#EAF3DE', color: '#173404' },
-  CALMO:    { bg: '#E6F1FB', color: '#042C53' },
-  ALEGRIA:  { bg: '#FAEEDA', color: '#412402' },
+  URGÊNCIA: { bg: '#3b1010', color: '#ffb3b3' },
+  NEUTRO:   { bg: '#1a2e0d', color: '#a8d48a' },
+  CALMO:    { bg: '#0d1f35', color: '#90bde8' },
+  ALEGRIA:  { bg: '#321d05', color: '#f5c98a' },
 }
 
 function parseBlocks(content: string) {
@@ -71,67 +76,70 @@ export default function HistoryPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: '#0f0f0f', color: '#e5e5e5' }}>
-      <nav style={{ background: '#1a1a1a', borderBottom: '1px solid #2a2a2a' }} className="px-6 py-3 flex items-center justify-between">
-        <Link href="/generator" className="font-bold text-lg">Gerador de Roteiros</Link>
-        <span className="text-sm text-gray-500">Histórico</span>
+    <div style={{ minHeight: '100vh', background: D.bg, color: D.text, fontFamily: 'Montserrat, sans-serif' }}>
+      <nav style={{ background: D.card, borderBottom: `1px solid ${D.border}`, padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 56 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ background: '#fff', borderRadius: 6, padding: '4px 8px' }}>
+            <span style={{ fontWeight: 900, fontSize: 10, color: '#17151A', letterSpacing: 0.5, textTransform: 'uppercase' }}>DO BOLSO PRA TELA</span>
+          </div>
+          <span style={{ color: D.muted, fontSize: 12 }}>/ Histórico</span>
+        </div>
+        <Link href="/generator" style={{ color: D.muted, fontSize: 13, textDecoration: 'none' }}>← Voltar</Link>
       </nav>
 
-      <div className="max-w-2xl mx-auto p-6">
-        <h2 className="font-semibold text-xl mb-4">Seus roteiros</h2>
+      <div style={{ maxWidth: 700, margin: '0 auto', padding: '28px 16px' }}>
+        <h2 style={{ fontWeight: 700, fontSize: 14, marginBottom: 20, textTransform: 'uppercase', letterSpacing: 1, color: D.muted }}>Seus roteiros</h2>
 
-        {loading && <p className="text-gray-400 text-sm">Carregando...</p>}
+        {loading && <p style={{ color: D.muted, fontSize: 13 }}>Carregando...</p>}
 
         {!loading && scripts.length === 0 && (
-          <div className="rounded-2xl p-8 text-center" style={{ background: '#1a1a1a', border: '1px solid #2a2a2a' }}>
-            <p className="text-sm mb-4" style={{ color: '#888' }}>Você ainda não gerou nenhum roteiro.</p>
-            <Link href="/generator" className="rounded-lg px-4 py-2 text-sm font-medium" style={{ background: '#fff', color: '#000' }}>
+          <div style={{ background: D.card, borderRadius: 14, padding: 40, textAlign: 'center', border: `1px solid ${D.border}` }}>
+            <p style={{ fontSize: 13, marginBottom: 16, color: D.muted }}>Você ainda não gerou nenhum roteiro.</p>
+            <Link href="/generator" style={{ background: D.red, color: '#fff', borderRadius: 8, padding: '10px 20px', fontSize: 13, fontWeight: 700, textDecoration: 'none', textTransform: 'uppercase', letterSpacing: 0.5 }}>
               Gerar primeiro roteiro
             </Link>
           </div>
         )}
 
-        <div className="flex flex-col gap-3">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {scripts.map(s => {
             const isOpen = expanded === s.id
             const blocks = isOpen ? parseBlocks(s.content) : []
             return (
-              <div key={s.id} className="rounded-xl overflow-hidden" style={{ background: '#1a1a1a', border: '1px solid #2a2a2a' }}>
-                {/* Header */}
-                <div className="p-4 flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm truncate" style={{ color: '#e5e5e5' }}>{s.theme}</p>
-                    <p className="text-xs mt-0.5" style={{ color: '#666' }}>{formatDate(s.created_at)}</p>
-                    <div className="flex gap-2 mt-2 flex-wrap">
-                      <span className="rounded px-2 py-0.5 text-xs" style={{ background: '#2a2a2a', color: '#aaa' }}>{s.platform}</span>
-                      <span className="rounded px-2 py-0.5 text-xs" style={{ background: '#2a2a2a', color: '#aaa' }}>{s.duration}</span>
-                      <span className="rounded px-2 py-0.5 text-xs" style={{ background: '#2a2a2a', color: '#aaa' }}>{s.objective}</span>
+              <div key={s.id} style={{ background: D.card, borderRadius: 12, border: `1px solid ${D.border}`, overflow: 'hidden' }}>
+                <div style={{ padding: 16, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontWeight: 600, fontSize: 13, color: D.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.theme}</p>
+                    <p style={{ fontSize: 11, color: D.muted, marginTop: 3 }}>{formatDate(s.created_at)}</p>
+                    <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
+                      {[s.platform, s.duration, s.objective].filter(Boolean).map((tag, i) => (
+                        <span key={i} style={{ background: '#2a2733', color: D.muted, fontSize: 11, padding: '2px 8px', borderRadius: 5 }}>{tag}</span>
+                      ))}
                     </div>
                   </div>
-                  <div className="flex gap-2 shrink-0">
+                  <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
                     <button onClick={() => handleCopy(s)}
-                      className="text-xs rounded-lg px-3 py-1.5 font-medium" style={{ border: '1px solid #333', background: 'none', color: '#aaa', cursor: 'pointer' }}>
+                      style={{ fontSize: 12, borderRadius: 7, padding: '6px 12px', fontWeight: 600, border: `1px solid ${D.border}`, background: 'none', color: D.muted, cursor: 'pointer' }}>
                       {copied === s.id ? '✓ Copiado' : 'Copiar'}
                     </button>
                     <button onClick={() => setExpanded(isOpen ? null : s.id)}
-                      className="text-xs rounded-lg px-3 py-1.5 font-medium" style={{ background: '#fff', color: '#000', border: 'none', cursor: 'pointer' }}>
+                      style={{ fontSize: 12, borderRadius: 7, padding: '6px 12px', fontWeight: 700, background: D.red, color: '#fff', border: 'none', cursor: 'pointer' }}>
                       {isOpen ? 'Fechar' : 'Ver roteiro'}
                     </button>
                   </div>
                 </div>
 
-                {/* Content */}
                 {isOpen && (
-                  <div className="px-4 py-4 flex flex-col gap-2" style={{ borderTop: '1px solid #2a2a2a' }}>
+                  <div style={{ padding: '4px 16px 16px', borderTop: `1px solid ${D.border}`, display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {blocks.map((block, i) => {
                       if (block.isDirection) return (
-                        <p key={i} className="text-xs text-gray-400 italic py-1 border-t border-dashed border-gray-200">{block.text}</p>
+                        <p key={i} style={{ fontSize: 12, color: D.muted, fontStyle: 'italic', borderTop: `1px dashed ${D.border}`, paddingTop: 6, margin: 0 }}>{block.text}</p>
                       )
                       const st = EMOTION_STYLES[block.emotion] || EMOTION_STYLES.NEUTRO
                       return (
-                        <div key={i} style={{ background: st.bg }} className="rounded-xl p-3">
-                          <span style={{ color: st.color }} className="text-xs font-bold tracking-wider block mb-1">[{block.emotion}]</span>
-                          <p style={{ color: st.color }} className="text-sm leading-relaxed">{block.text}</p>
+                        <div key={i} style={{ background: st.bg, borderRadius: 10, padding: '10px 14px' }}>
+                          <span style={{ color: st.color, fontSize: 10, fontWeight: 700, letterSpacing: 1, display: 'block', marginBottom: 4 }}>[{block.emotion}]</span>
+                          <p style={{ color: st.color, fontSize: 13, lineHeight: 1.6, margin: 0 }}>{block.text}</p>
                         </div>
                       )
                     })}

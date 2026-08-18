@@ -5,6 +5,12 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 
+const D = {
+  bg: '#17151A', card: '#211F24', border: '#2e2b33',
+  text: '#F2EFE9', muted: '#8a8490', input: '#0f0e11', inputBorder: '#3a3740',
+  red: '#B7022C',
+}
+
 export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
@@ -23,7 +29,6 @@ export default function LoginPage() {
       setLoading(false)
       return
     }
-    // Check if user has voice profile
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
       const { data: profile } = await supabase
@@ -36,42 +41,48 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: '#0f0f0f' }}>
-      <div className="w-full max-w-sm rounded-2xl shadow p-8" style={{ background: '#1a1a1a', border: '1px solid #2a2a2a' }}>
-        <h1 className="text-2xl font-bold mb-2" style={{ color: '#e5e5e5' }}>Entrar</h1>
-        <p className="text-sm mb-6" style={{ color: '#888' }}>Acesse sua conta para continuar</p>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, background: D.bg, fontFamily: 'Montserrat, sans-serif' }}>
+      <div style={{ width: '100%', maxWidth: 400 }}>
 
-        <form onSubmit={handleLogin} className="flex flex-col gap-4">
-          <div>
-            <label className="block text-sm font-medium mb-1" style={{ color: '#ccc' }}>Email</label>
-            <input type="email" required value={email} onChange={e => setEmail(e.target.value)}
-              className="w-full rounded-lg px-3 py-2 text-sm outline-none"
-              style={{ background: '#111', border: '1px solid #333', color: '#e5e5e5' }}
-              placeholder="seu@email.com" />
+        {/* Logo */}
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <div style={{ display: 'inline-block', background: '#fff', borderRadius: 12, padding: '10px 18px' }}>
+            <span style={{ fontWeight: 900, fontSize: 13, color: '#17151A', letterSpacing: 1, textTransform: 'uppercase' }}>DO BOLSO PRA TELA</span>
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-1" style={{ color: '#ccc' }}>Senha</label>
-            <input type="password" required value={password} onChange={e => setPassword(e.target.value)}
-              className="w-full rounded-lg px-3 py-2 text-sm outline-none"
-              style={{ background: '#111', border: '1px solid #333', color: '#e5e5e5' }}
-              placeholder="••••••••" />
-          </div>
+          <p style={{ color: D.muted, fontSize: 12, marginTop: 8, letterSpacing: 2, textTransform: 'uppercase' }}>Gerador de Roteiros</p>
+        </div>
 
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+        <div style={{ background: D.card, borderRadius: 16, padding: 32, border: `1px solid ${D.border}` }}>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: D.text, marginBottom: 4 }}>Entrar</h1>
+          <p style={{ color: D.muted, fontSize: 13, marginBottom: 24 }}>Acesse sua conta para continuar</p>
 
-          <button type="submit" disabled={loading}
-            className="w-full rounded-lg py-2.5 text-sm font-medium disabled:opacity-50"
-            style={{ background: '#fff', color: '#000' }}>
-            {loading ? 'Entrando...' : 'Entrar'}
-          </button>
-        </form>
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 6, color: D.muted, textTransform: 'uppercase', letterSpacing: 0.5 }}>Email</label>
+              <input type="email" required value={email} onChange={e => setEmail(e.target.value)}
+                placeholder="seu@email.com"
+                style={{ width: '100%', background: D.input, border: `1px solid ${D.inputBorder}`, borderRadius: 8, padding: '10px 12px', fontSize: 14, color: D.text, outline: 'none', boxSizing: 'border-box' }} />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 6, color: D.muted, textTransform: 'uppercase', letterSpacing: 0.5 }}>Senha</label>
+              <input type="password" required value={password} onChange={e => setPassword(e.target.value)}
+                placeholder="••••••••"
+                style={{ width: '100%', background: D.input, border: `1px solid ${D.inputBorder}`, borderRadius: 8, padding: '10px 12px', fontSize: 14, color: D.text, outline: 'none', boxSizing: 'border-box' }} />
+            </div>
 
-        <p className="text-center text-sm mt-6" style={{ color: '#666' }}>
-          Não tem conta?{' '}
-          <Link href="/register" className="font-medium underline" style={{ color: '#e5e5e5' }}>
-            Cadastre-se
-          </Link>
-        </p>
+            {error && <p style={{ color: '#f87171', fontSize: 13 }}>{error}</p>}
+
+            <button type="submit" disabled={loading}
+              style={{ width: '100%', background: D.red, color: '#fff', border: 'none', borderRadius: 8, padding: '12px', fontSize: 14, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1, textTransform: 'uppercase', letterSpacing: 1, marginTop: 4 }}>
+              {loading ? 'Entrando...' : 'Entrar'}
+            </button>
+          </form>
+
+          <p style={{ textAlign: 'center', fontSize: 13, marginTop: 20, color: D.muted }}>
+            Não tem conta?{' '}
+            <Link href="/register" style={{ color: D.text, fontWeight: 600, textDecoration: 'underline' }}>Cadastre-se</Link>
+          </p>
+        </div>
       </div>
     </div>
   )

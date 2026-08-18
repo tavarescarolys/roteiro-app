@@ -9,8 +9,9 @@ type Step = 'context' | 'intro' | 'recording' | 'review' | 'saving'
 const LIMIT_SECONDS = 60
 
 const D = {
-  bg: '#0f0f0f', card: '#1a1a1a', border: '#2a2a2a',
-  text: '#e5e5e5', muted: '#888', input: '#111', inputBorder: '#333',
+  bg: '#17151A', card: '#211F24', border: '#2e2b33',
+  text: '#F2EFE9', muted: '#8a8490', input: '#0f0e11', inputBorder: '#3a3740',
+  red: '#B7022C',
 }
 
 function ProgressBar({ step }: { step: Step }) {
@@ -127,12 +128,12 @@ export default function OnboardingPage() {
 
   const timerColor = secondsLeft <= 10 ? '#ef4444' : secondsLeft <= 20 ? '#f59e0b' : '#22c55e'
 
-  const btnPrimary = { width: '100%', background: '#fff', color: '#000', border: 'none', borderRadius: 10, padding: '12px', fontSize: 14, fontWeight: 600, cursor: 'pointer' } as const
+  const btnPrimary = { width: '100%', background: D.red, color: '#fff', border: 'none', borderRadius: 10, padding: '12px', fontSize: 14, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: 0.5 } as const
   const btnSecondary = { flex: 1, background: 'none', border: `1px solid ${D.border}`, borderRadius: 10, padding: '10px', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: D.text } as const
   const label = { display: 'block', fontSize: 13, fontWeight: 500, marginBottom: 6, color: D.text } as const
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, background: D.bg }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, background: D.bg, fontFamily: 'Montserrat, sans-serif' }}>
       <div style={{ width: '100%', maxWidth: 480, background: D.card, borderRadius: 20, padding: 32, border: `1px solid ${D.border}`, color: D.text }}>
         <ProgressBar step={step} />
 

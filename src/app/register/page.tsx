@@ -5,9 +5,14 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 
+const D = {
+  bg: '#17151A', card: '#211F24', border: '#2e2b33',
+  text: '#F2EFE9', muted: '#8a8490', input: '#0f0e11', inputBorder: '#3a3740',
+  red: '#B7022C', redHover: '#E0143F',
+}
+
 export default function RegisterPage() {
   const router = useRouter()
-  const [code, setCode] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -18,66 +23,62 @@ export default function RegisterPage() {
     setError('')
     setLoading(true)
 
-    const res = await fetch('/api/validate-code', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, email, password }),
-    })
-    const data = await res.json()
+    const supabase = createClient()
+    const { error: signUpError } = await supabase.auth.signUp({ email, password })
 
-    if (!res.ok) {
-      setError(data.error || 'Erro ao cadastrar.')
+    if (signUpError) {
+      setError(signUpError.message || 'Erro ao criar conta.')
       setLoading(false)
       return
     }
 
-    const supabase = createClient()
     await supabase.auth.signInWithPassword({ email, password })
     router.push('/onboarding')
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: '#0f0f0f' }}>
-      <div className="w-full max-w-sm rounded-2xl shadow p-8" style={{ background: '#1a1a1a', border: '1px solid #2a2a2a' }}>
-        <h1 className="text-2xl font-bold mb-2" style={{ color: '#e5e5e5' }}>Criar conta</h1>
-        <p className="text-sm mb-6" style={{ color: '#888' }}>Use seu código de acesso para se cadastrar</p>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, background: D.bg, fontFamily: 'Montserrat, sans-serif' }}>
+      <div style={{ width: '100%', maxWidth: 400 }}>
 
-        <form onSubmit={handleRegister} className="flex flex-col gap-4">
-          <div>
-            <label className="block text-sm font-medium mb-1" style={{ color: '#ccc' }}>Código de acesso</label>
-            <input type="text" required value={code} onChange={e => setCode(e.target.value.toUpperCase())}
-              className="w-full rounded-lg px-3 py-2 text-sm outline-none font-mono tracking-widest"
-              style={{ background: '#111', border: '1px solid #333', color: '#e5e5e5' }}
-              placeholder="XXXXXXXX" />
+        {/* Logo */}
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <div style={{ display: 'inline-block', background: '#fff', borderRadius: 12, padding: '10px 18px' }}>
+            <span style={{ fontWeight: 900, fontSize: 13, color: '#17151A', letterSpacing: 1, textTransform: 'uppercase' }}>DO BOLSO PRA TELA</span>
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-1" style={{ color: '#ccc' }}>Email</label>
-            <input type="email" required value={email} onChange={e => setEmail(e.target.value)}
-              className="w-full rounded-lg px-3 py-2 text-sm outline-none"
-              style={{ background: '#111', border: '1px solid #333', color: '#e5e5e5' }}
-              placeholder="seu@email.com" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1" style={{ color: '#ccc' }}>Senha</label>
-            <input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)}
-              className="w-full rounded-lg px-3 py-2 text-sm outline-none"
-              style={{ background: '#111', border: '1px solid #333', color: '#e5e5e5' }}
-              placeholder="Mínimo 6 caracteres" />
-          </div>
+          <p style={{ color: D.muted, fontSize: 12, marginTop: 8, letterSpacing: 2, textTransform: 'uppercase' }}>Gerador de Roteiros</p>
+        </div>
 
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+        <div style={{ background: D.card, borderRadius: 16, padding: 32, border: `1px solid ${D.border}` }}>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: D.text, marginBottom: 4 }}>Criar conta</h1>
+          <p style={{ color: D.muted, fontSize: 13, marginBottom: 24 }}>Preencha seus dados para começar</p>
 
-          <button type="submit" disabled={loading}
-            className="w-full rounded-lg py-2.5 text-sm font-medium disabled:opacity-50"
-            style={{ background: '#fff', color: '#000' }}>
-            {loading ? 'Criando conta...' : 'Criar conta'}
-          </button>
-        </form>
+          <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 6, color: D.muted, textTransform: 'uppercase', letterSpacing: 0.5 }}>Email</label>
+              <input type="email" required value={email} onChange={e => setEmail(e.target.value)}
+                placeholder="seu@email.com"
+                style={{ width: '100%', background: D.input, border: `1px solid ${D.inputBorder}`, borderRadius: 8, padding: '10px 12px', fontSize: 14, color: D.text, outline: 'none', boxSizing: 'border-box' }} />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 6, color: D.muted, textTransform: 'uppercase', letterSpacing: 0.5 }}>Senha</label>
+              <input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)}
+                placeholder="Mínimo 6 caracteres"
+                style={{ width: '100%', background: D.input, border: `1px solid ${D.inputBorder}`, borderRadius: 8, padding: '10px 12px', fontSize: 14, color: D.text, outline: 'none', boxSizing: 'border-box' }} />
+            </div>
 
-        <p className="text-center text-sm mt-6" style={{ color: '#666' }}>
-          Já tem conta?{' '}
-          <Link href="/login" className="font-medium underline" style={{ color: '#e5e5e5' }}>Entrar</Link>
-        </p>
+            {error && <p style={{ color: '#f87171', fontSize: 13 }}>{error}</p>}
+
+            <button type="submit" disabled={loading}
+              style={{ width: '100%', background: D.red, color: '#fff', border: 'none', borderRadius: 8, padding: '12px', fontSize: 14, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1, textTransform: 'uppercase', letterSpacing: 1, marginTop: 4 }}>
+              {loading ? 'Criando conta...' : 'Criar conta'}
+            </button>
+          </form>
+
+          <p style={{ textAlign: 'center', fontSize: 13, marginTop: 20, color: D.muted }}>
+            Já tem conta?{' '}
+            <Link href="/login" style={{ color: D.text, fontWeight: 600, textDecoration: 'underline' }}>Entrar</Link>
+          </p>
+        </div>
       </div>
     </div>
   )
