@@ -1,4 +1,5 @@
 'use client'
+import { LOGO_SRC } from '@/lib/logo'
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
@@ -79,7 +80,7 @@ export default function HistoryPage() {
     <div style={{ minHeight: '100vh', background: D.bg, color: D.text, fontFamily: 'Montserrat, sans-serif' }}>
       <nav style={{ background: D.card, borderBottom: `1px solid ${D.border}`, padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 56 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <img src="/logo.png" alt="Do Bolso pra Tela" style={{ height: 32, objectFit: 'contain' }} />
+          <img src={LOGO_SRC} alt="Do Bolso pra Tela" style={{ height: 32, objectFit: 'contain' }} />
           <span style={{ color: D.muted, fontSize: 12 }}>/ Histórico</span>
         </div>
         <Link href="/generator" style={{ color: D.muted, fontSize: 13, textDecoration: 'none' }}>← Voltar</Link>

@@ -1,4 +1,5 @@
 'use client'
+import { LOGO_SRC } from '@/lib/logo'
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
@@ -143,7 +144,7 @@ export default function GeneratorPage() {
       {/* Nav */}
       <nav className="no-print" style={{ background: D.card, borderBottom: `1px solid ${D.border}`, padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 56 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <img src="/logo.png" alt="Do Bolso pra Tela" style={{ height: 32, objectFit: 'contain' }} />
+          <img src={LOGO_SRC} alt="Do Bolso pra Tela" style={{ height: 32, objectFit: 'contain' }} />
           <span style={{ color: D.muted, fontSize: 12 }}>/ Roteiros</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 20, fontSize: 13 }}>

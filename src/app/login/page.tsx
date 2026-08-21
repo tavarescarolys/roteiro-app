@@ -1,4 +1,5 @@
 'use client'
+import { LOGO_SRC } from '@/lib/logo'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -46,7 +47,7 @@ export default function LoginPage() {
 
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <img src="/logo.png" alt="Do Bolso pra Tela" style={{ height: 60, objectFit: 'contain' }} />
+          <img src={LOGO_SRC} alt="Do Bolso pra Tela" style={{ height: 60, objectFit: 'contain' }} />
           <p style={{ color: D.muted, fontSize: 12, marginTop: 8, letterSpacing: 2, textTransform: 'uppercase' }}>Gerador de Roteiros</p>
         </div>
 

@@ -7,7 +7,7 @@ export default function AcessoEncerradoPage() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, background: D.bg, fontFamily: 'Montserrat, sans-serif' }}>
       <div style={{ width: '100%', maxWidth: 420, textAlign: 'center' }}>
-        <img src="/logo.png" alt="Do Bolso pra Tela" style={{ height: 56, objectFit: 'contain', marginBottom: 32 }} />
+        <img src={LOGO_SRC} alt="Do Bolso pra Tela" style={{ height: 56, objectFit: 'contain', marginBottom: 32 }} />
         <div style={{ background: D.card, borderRadius: 16, padding: 40, border: `1px solid ${D.border}` }}>
           <div style={{ fontSize: 40, marginBottom: 16 }}>⏳</div>
           <h1 style={{ fontSize: 20, fontWeight: 700, color: D.text, marginBottom: 12 }}>Seu acesso encerrou</h1>
