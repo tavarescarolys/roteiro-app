@@ -1,3 +1,5 @@
+import { LOGO_SRC } from '@/lib/logo'
+
 const D = {
   bg: '#17151A', card: '#211F24', border: '#2e2b33',
   text: '#F2EFE9', muted: '#8a8490', red: '#B7022C',
