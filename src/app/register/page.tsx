@@ -27,7 +27,11 @@ export default function RegisterPage() {
     const { error: signUpError } = await supabase.auth.signUp({ email, password })
 
     if (signUpError) {
-      setError(signUpError.message || 'Erro ao criar conta.')
+      if (signUpError.message.toLowerCase().includes('already registered') || signUpError.message.toLowerCase().includes('already exists')) {
+        setError('Esse email já tem uma conta. Clique em "Entrar" para fazer login.')
+      } else {
+        setError(signUpError.message || 'Erro ao criar conta.')
+      }
       setLoading(false)
       return
     }
