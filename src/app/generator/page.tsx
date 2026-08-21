@@ -1,7 +1,7 @@
 'use client'
 import { LOGO_SRC } from '@/lib/logo'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 
@@ -17,6 +17,14 @@ const EMOTION_STYLES: Record<string, { bg: string; color: string; label: string 
   CALMO:    { bg: '#0d1f35', color: '#90bde8', label: 'CALMO' },
   ALEGRIA:  { bg: '#321d05', color: '#f5c98a', label: 'ALEGRIA' },
 }
+
+const LOADING_STEPS = [
+  'Lendo seu perfil de voz...',
+  'Construindo o gancho...',
+  'Desenvolvendo o conteúdo...',
+  'Ajustando para seu jeito de falar...',
+  'Finalizando o roteiro...',
+]
 
 type Block = { emotion: string; text: string; isDirection: boolean }
 
@@ -55,6 +63,10 @@ function parseScript(content: string): Block[] {
   return blocks
 }
 
+function blocksToText(blocks: Block[]): string {
+  return blocks.map(b => b.isDirection ? `(ORIENTAÇÃO) ${b.text}` : `[${b.emotion}] ${b.text}`).join('\n')
+}
+
 export default function GeneratorPage() {
   const [assunto, setAssunto] = useState('')
   const [angulo, setAngulo] = useState('')
@@ -65,25 +77,61 @@ export default function GeneratorPage() {
   const [platform, setPlatform] = useState('')
   const [duration, setDuration] = useState('')
   const [objective, setObjective] = useState('')
+  const [scriptCount, setScriptCount] = useState<number | null>(null)
   const [blocks, setBlocks] = useState<Block[]>([])
   const [editingIdx, setEditingIdx] = useState<number | null>(null)
   const [editText, setEditText] = useState('')
+  const [regenIdx, setRegenIdx] = useState<number | null>(null)
   const [loading, setLoading] = useState(false)
+  const [loadingStep, setLoadingStep] = useState(0)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
+  const loadingTimer = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  function startEdit(i: number) {
-    setEditingIdx(i)
-    setEditText(blocks[i].text)
+  useEffect(() => {
+    async function fetchCount() {
+      const supabase = createClient()
+      const { count } = await supabase.from('scripts').select('id', { count: 'exact', head: true })
+      setScriptCount(count ?? 0)
+    }
+    fetchCount()
+  }, [blocks])
+
+  function startLoadingAnim() {
+    setLoadingStep(0)
+    let step = 0
+    loadingTimer.current = setInterval(() => {
+      step = Math.min(step + 1, LOADING_STEPS.length - 1)
+      setLoadingStep(step)
+    }, 1400)
   }
 
+  function stopLoadingAnim() {
+    if (loadingTimer.current) { clearInterval(loadingTimer.current); loadingTimer.current = null }
+  }
+
+  function startEdit(i: number) { setEditingIdx(i); setEditText(blocks[i].text) }
   function saveEdit(i: number) {
     setBlocks(prev => prev.map((b, idx) => idx === i ? { ...b, text: editText } : b))
     setEditingIdx(null)
   }
-
   function changeEmotion(i: number, emotion: string) {
     setBlocks(prev => prev.map((b, idx) => idx === i ? { ...b, emotion, isDirection: false } : b))
+  }
+
+  async function regenBlock(i: number) {
+    setRegenIdx(i)
+    const block = blocks[i]
+    const res = await fetch('/api/regen-block', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ blockText: block.text, emotion: block.emotion, fullScript: blocksToText(blocks) }),
+    })
+    const data = await res.json()
+    if (res.ok && data.text) {
+      setBlocks(prev => prev.map((b, idx) => idx === i ? { ...b, text: data.text } : b))
+    }
+    setRegenIdx(null)
   }
 
   async function handleGenerate(e: React.FormEvent) {
@@ -92,6 +140,7 @@ export default function GeneratorPage() {
     setLoading(true)
     setBlocks([])
     setEditingIdx(null)
+    startLoadingAnim()
 
     const theme = `Assunto: ${assunto}\nComo contar: ${angulo}\nPúblico-alvo: ${publico}\nMensagem principal: ${mensagem}${produto ? `\nProduto/serviço: ${produto}` : ''}`
 
@@ -100,6 +149,7 @@ export default function GeneratorPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ platform, theme, duration, objective, sentimento }),
     })
+    stopLoadingAnim()
     const data = await res.json()
     if (!res.ok) { setError(data.error || 'Erro ao gerar roteiro.'); setLoading(false); return }
     setBlocks(parseScript(data.content))
@@ -139,6 +189,8 @@ export default function GeneratorPage() {
           .emotion-label { display: block !important; font-size: 10px; font-weight: 700; letter-spacing: 1px; margin-bottom: 4px; }
           .speech-text { font-size: 13px; line-height: 1.6; }
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes progress-pulse { 0%,100% { opacity:.6 } 50% { opacity:1 } }
       `}</style>
 
       {/* Nav */}
@@ -148,6 +200,11 @@ export default function GeneratorPage() {
           <span style={{ color: D.muted, fontSize: 12 }}>/ Roteiros</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 20, fontSize: 13 }}>
+          {scriptCount !== null && (
+            <span style={{ color: D.muted, fontSize: 12, background: '#2a2733', padding: '3px 10px', borderRadius: 20 }}>
+              {scriptCount} {scriptCount === 1 ? 'roteiro' : 'roteiros'}
+            </span>
+          )}
           <Link href="/history" style={{ color: D.muted, textDecoration: 'none' }}>Histórico</Link>
           <Link href="/onboarding" style={{ color: D.muted, textDecoration: 'none' }}>Atualizar voz</Link>
           <button onClick={handleLogout} style={{ background: 'none', border: 'none', cursor: 'pointer', color: D.muted, fontSize: 13 }}>Sair</button>
@@ -242,10 +299,27 @@ export default function GeneratorPage() {
           {error && <p style={{ color: '#f87171', fontSize: 13, marginBottom: 12 }}>{error}</p>}
 
           <button type="submit" disabled={loading}
-            style={{ width: '100%', background: D.red, color: '#fff', border: 'none', borderRadius: 10, padding: '14px', fontSize: 14, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1, textTransform: 'uppercase', letterSpacing: 1 }}>
-            {loading ? 'Gerando roteiro...' : 'Gerar roteiro →'}
+            style={{ width: '100%', background: D.red, color: '#fff', border: 'none', borderRadius: 10, padding: '14px', fontSize: 14, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, textTransform: 'uppercase', letterSpacing: 1 }}>
+            {loading ? 'Gerando...' : 'Gerar roteiro →'}
           </button>
         </form>
+
+        {/* Loading progress */}
+        {loading && (
+          <div style={{ background: D.card, borderRadius: 14, padding: 32, marginTop: 20, border: `1px solid ${D.border}`, textAlign: 'center' }}>
+            <div style={{ width: 36, height: 36, border: `3px solid ${D.border}`, borderTopColor: D.red, borderRadius: '50%', margin: '0 auto 20px', animation: 'spin 0.9s linear infinite' }} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {LOADING_STEPS.map((msg, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, opacity: i <= loadingStep ? 1 : 0.2, transition: 'opacity 0.4s' }}>
+                  <span style={{ width: 18, height: 18, borderRadius: '50%', background: i < loadingStep ? D.red : i === loadingStep ? D.red : D.border, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: '#fff', flexShrink: 0, animation: i === loadingStep ? 'progress-pulse 1s ease infinite' : 'none' }}>
+                    {i < loadingStep ? '✓' : ''}
+                  </span>
+                  <span style={{ fontSize: 13, color: i <= loadingStep ? D.text : D.muted, textAlign: 'left' }}>{msg}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Script output */}
         {blocks.length > 0 && (
@@ -273,19 +347,26 @@ export default function GeneratorPage() {
               {blocks.map((block, i) => {
                 const s = EMOTION_STYLES[block.emotion] || EMOTION_STYLES.NEUTRO
                 const isEditing = editingIdx === i
+                const isRegening = regenIdx === i
                 return (
                   <div key={i} className={block.isDirection ? 'direction-block' : 'speech-block'}
-                    style={{ background: block.isDirection ? 'transparent' : s.bg, borderRadius: block.isDirection ? 0 : 10, padding: block.isDirection ? '4px 0' : '12px 16px', borderTop: block.isDirection ? `1px dashed ${D.border}` : 'none' }}>
+                    style={{ background: block.isDirection ? 'transparent' : s.bg, borderRadius: block.isDirection ? 0 : 10, padding: block.isDirection ? '4px 0' : '12px 16px', borderTop: block.isDirection ? `1px dashed ${D.border}` : 'none', opacity: isRegening ? 0.5 : 1, transition: 'opacity 0.2s' }}>
                     {!block.isDirection && (
                       <div className="no-print" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
                         <select value={block.emotion} onChange={e => changeEmotion(i, e.target.value)}
                           style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.5, background: 'transparent', border: 'none', color: s.color, cursor: 'pointer', outline: 'none', padding: 0 }}>
                           {Object.keys(EMOTION_STYLES).map(k => <option key={k} value={k}>{k}</option>)}
                         </select>
-                        <button onClick={() => isEditing ? saveEdit(i) : startEdit(i)}
-                          style={{ fontSize: 12, background: 'none', border: 'none', cursor: 'pointer', color: s.color, opacity: 0.8, padding: '2px 6px' }}>
-                          {isEditing ? '✓ Salvar' : '✏️ Editar'}
-                        </button>
+                        <div style={{ display: 'flex', gap: 6 }}>
+                          <button onClick={() => regenBlock(i)} disabled={isRegening || regenIdx !== null}
+                            style={{ fontSize: 11, background: 'none', border: `1px solid ${s.color}40`, borderRadius: 5, cursor: 'pointer', color: s.color, opacity: 0.7, padding: '2px 8px' }}>
+                            {isRegening ? '...' : '↺ Regerar'}
+                          </button>
+                          <button onClick={() => isEditing ? saveEdit(i) : startEdit(i)}
+                            style={{ fontSize: 11, background: 'none', border: 'none', cursor: 'pointer', color: s.color, opacity: 0.8, padding: '2px 6px' }}>
+                            {isEditing ? '✓ Salvar' : '✏️ Editar'}
+                          </button>
+                        </div>
                       </div>
                     )}
                     {!block.isDirection && (

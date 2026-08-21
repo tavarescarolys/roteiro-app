@@ -1,7 +1,7 @@
 'use client'
 import { LOGO_SRC } from '@/lib/logo'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 
@@ -17,7 +17,7 @@ type Script = {
 
 const D = {
   bg: '#17151A', card: '#211F24', border: '#2e2b33',
-  text: '#F2EFE9', muted: '#8a8490', red: '#B7022C',
+  text: '#F2EFE9', muted: '#8a8490', red: '#B7022C', input: '#0f0e11', inputBorder: '#3a3740',
 }
 
 const EMOTION_STYLES: Record<string, { bg: string; color: string }> = {
@@ -26,6 +26,8 @@ const EMOTION_STYLES: Record<string, { bg: string; color: string }> = {
   CALMO:    { bg: '#0d1f35', color: '#90bde8' },
   ALEGRIA:  { bg: '#321d05', color: '#f5c98a' },
 }
+
+const PLATFORMS = ['Todos', 'Reels', 'TikTok', 'YouTube']
 
 function parseBlocks(content: string) {
   return content.split('\n').filter(l => l.trim()).map(line => {
@@ -52,6 +54,8 @@ export default function HistoryPage() {
   const [loading, setLoading] = useState(true)
   const [expanded, setExpanded] = useState<string | null>(null)
   const [copied, setCopied] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
+  const [platformFilter, setPlatformFilter] = useState('Todos')
 
   useEffect(() => {
     async function load() {
@@ -65,6 +69,14 @@ export default function HistoryPage() {
     }
     load()
   }, [])
+
+  const filtered = useMemo(() => {
+    return scripts.filter(s => {
+      const matchPlatform = platformFilter === 'Todos' || s.platform === platformFilter
+      const matchSearch = !search.trim() || s.theme.toLowerCase().includes(search.toLowerCase())
+      return matchPlatform && matchSearch
+    })
+  }, [scripts, search, platformFilter])
 
   function formatDate(iso: string) {
     return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
@@ -87,7 +99,37 @@ export default function HistoryPage() {
       </nav>
 
       <div style={{ maxWidth: 700, margin: '0 auto', padding: '28px 16px' }}>
-        <h2 style={{ fontWeight: 700, fontSize: 14, marginBottom: 20, textTransform: 'uppercase', letterSpacing: 1, color: D.muted }}>Seus roteiros</h2>
+
+        {/* Header com contador */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+          <h2 style={{ fontWeight: 700, fontSize: 14, textTransform: 'uppercase', letterSpacing: 1, color: D.muted }}>Seus roteiros</h2>
+          {!loading && (
+            <span style={{ fontSize: 12, color: D.muted, background: '#2a2733', padding: '3px 12px', borderRadius: 20 }}>
+              {scripts.length} {scripts.length === 1 ? 'roteiro' : 'roteiros'} no total
+            </span>
+          )}
+        </div>
+
+        {/* Busca + filtro */}
+        {!loading && scripts.length > 0 && (
+          <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
+            <input
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Buscar por assunto..."
+              style={{ flex: 1, minWidth: 180, background: D.input, border: `1px solid ${D.inputBorder}`, borderRadius: 8, padding: '8px 12px', fontSize: 13, color: D.text, outline: 'none' }}
+            />
+            <div style={{ display: 'flex', gap: 6 }}>
+              {PLATFORMS.map(p => (
+                <button key={p} onClick={() => setPlatformFilter(p)}
+                  style={{ fontSize: 12, padding: '6px 12px', borderRadius: 7, border: `1px solid ${platformFilter === p ? D.red : D.border}`, background: platformFilter === p ? D.red : 'none', color: platformFilter === p ? '#fff' : D.muted, cursor: 'pointer', fontWeight: platformFilter === p ? 700 : 400 }}>
+                  {p}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {loading && <p style={{ color: D.muted, fontSize: 13 }}>Carregando...</p>}
 
@@ -100,8 +142,14 @@ export default function HistoryPage() {
           </div>
         )}
 
+        {!loading && scripts.length > 0 && filtered.length === 0 && (
+          <div style={{ background: D.card, borderRadius: 14, padding: 32, textAlign: 'center', border: `1px solid ${D.border}` }}>
+            <p style={{ fontSize: 13, color: D.muted }}>Nenhum roteiro encontrado para essa busca.</p>
+          </div>
+        )}
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {scripts.map(s => {
+          {filtered.map(s => {
             const isOpen = expanded === s.id
             const blocks = isOpen ? parseBlocks(s.content) : []
             return (
