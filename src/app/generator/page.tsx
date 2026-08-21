@@ -122,6 +122,7 @@ export default function GeneratorPage() {
 
   const inp = { width: '100%', background: D.input, border: `1px solid ${D.inputBorder}`, borderRadius: 8, padding: '10px 12px', fontSize: 13, color: D.text, outline: 'none', boxSizing: 'border-box' } as const
   const lbl = { display: 'block', fontSize: 11, fontWeight: 600, marginBottom: 6, color: D.muted, textTransform: 'uppercase', letterSpacing: 0.5 } as const
+  const req = <span style={{ color: D.red, marginLeft: 2 }}>*</span>
 
   return (
     <div style={{ minHeight: '100vh', background: D.bg, color: D.text, fontFamily: 'Montserrat, sans-serif' }}>
@@ -160,13 +161,13 @@ export default function GeneratorPage() {
             <h2 style={{ fontWeight: 700, fontSize: 14, marginBottom: 18, textTransform: 'uppercase', letterSpacing: 1, color: D.muted }}>Briefing do vídeo</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div>
-                <label style={lbl}>Sobre o que é esse vídeo?</label>
+                <label style={lbl}>Sobre o que é esse vídeo?{req}</label>
                 <textarea required value={assunto} onChange={e => setAssunto(e.target.value)} rows={3}
                   placeholder="Ex: Quero falar sobre como freelancers podem cobrar mais caro sem perder clientes usando posicionamento."
                   style={{ ...inp, resize: 'vertical' }} />
               </div>
               <div>
-                <label style={lbl}>Como você vai contar isso?</label>
+                <label style={lbl}>Como você vai contar isso?{req}</label>
                 <select required value={angulo} onChange={e => setAngulo(e.target.value)} style={inp}>
                   <option value="">Selecione</option>
                   <option value="Erro que a maioria comete">❌ Erro que a maioria comete</option>
@@ -180,12 +181,12 @@ export default function GeneratorPage() {
                 </select>
               </div>
               <div>
-                <label style={lbl}>Para quem é esse vídeo?</label>
+                <label style={lbl}>Para quem é esse vídeo?{req}</label>
                 <input type="text" required value={publico} onChange={e => setPublico(e.target.value)}
                   placeholder="Ex: Mulheres 25–35 anos, empreendedoras iniciantes" style={inp} />
               </div>
               <div>
-                <label style={lbl}>Qual mensagem principal você quer deixar?</label>
+                <label style={lbl}>Qual mensagem principal você quer deixar?{req}</label>
                 <input type="text" required value={mensagem} onChange={e => setMensagem(e.target.value)}
                   placeholder="Ex: Que é possível ganhar mais trabalhando menos se você se posicionar certo." style={inp} />
               </div>
@@ -202,28 +203,28 @@ export default function GeneratorPage() {
             <h2 style={{ fontWeight: 700, fontSize: 14, marginBottom: 18, textTransform: 'uppercase', letterSpacing: 1, color: D.muted }}>Configurações</h2>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div>
-                <label style={lbl}>Plataforma</label>
+                <label style={lbl}>Plataforma{req}</label>
                 <select required value={platform} onChange={e => setPlatform(e.target.value)} style={inp}>
                   <option value="">Selecione</option>
                   <option>Reels</option><option>TikTok</option><option>YouTube</option>
                 </select>
               </div>
               <div>
-                <label style={lbl}>Duração</label>
+                <label style={lbl}>Duração{req}</label>
                 <select required value={duration} onChange={e => setDuration(e.target.value)} style={inp}>
                   <option value="">Selecione</option>
                   <option>30s</option><option>60s</option><option>3min</option><option>5min+</option>
                 </select>
               </div>
               <div>
-                <label style={lbl}>Objetivo</label>
+                <label style={lbl}>Objetivo{req}</label>
                 <select required value={objective} onChange={e => setObjective(e.target.value)} style={inp}>
                   <option value="">Selecione</option>
                   <option>Educar</option><option>Vender</option><option>Inspirar</option><option>Entreter</option>
                 </select>
               </div>
               <div>
-                <label style={lbl}>Sentimento do vídeo</label>
+                <label style={lbl}>Sentimento do vídeo{req}</label>
                 <select required value={sentimento} onChange={e => setSentimento(e.target.value)} style={inp}>
                   <option value="">Selecione</option>
                   <option value="Motivacional — energia alta, empolgante">🔥 Motivacional</option>

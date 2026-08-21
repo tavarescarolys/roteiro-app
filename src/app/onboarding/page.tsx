@@ -146,15 +146,15 @@ export default function OnboardingPage() {
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div>
-                <label style={label}>Qual seu nome ou como gosta de ser chamado(a)?</label>
+                <label style={label}>Qual seu nome ou como gosta de ser chamado(a)? <span style={{ color: '#B7022C' }}>*</span></label>
                 <Input value={nome} onChange={setNome} placeholder="Ex: Carol, Tiago, Pri..." />
               </div>
               <div>
-                <label style={label}>Qual é a sua área ou profissão?</label>
+                <label style={label}>Qual é a sua área ou profissão? <span style={{ color: '#B7022C' }}>*</span></label>
                 <Input value={profissao} onChange={setProfissao} placeholder="Ex: nutricionista, designer, coach de carreira..." />
               </div>
               <div>
-                <label style={label}>Quem é sua audiência principal?</label>
+                <label style={label}>Quem é sua audiência principal? <span style={{ color: '#B7022C' }}>*</span></label>
                 <Input value={audiencia} onChange={setAudiencia} placeholder="Ex: mulheres 30–45 anos, empreendedores iniciantes..." />
               </div>
             </div>
