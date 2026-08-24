@@ -2,9 +2,7 @@
 import { LOGO_SRC } from '@/lib/logo'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase'
 
 const D = {
   bg: '#17151A', card: '#211F24', border: '#2e2b33',
@@ -13,7 +11,6 @@ const D = {
 }
 
 export default function RegisterPage() {
-  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -24,14 +21,19 @@ export default function RegisterPage() {
     setError('')
     setLoading(true)
 
-    const supabase = createClient()
-    const { error: signUpError } = await supabase.auth.signUp({ email, password })
+    const res = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    })
+    const data = await res.json()
 
-    if (signUpError) {
-      if (signUpError.message.toLowerCase().includes('already registered') || signUpError.message.toLowerCase().includes('already exists')) {
+    if (!res.ok) {
+      const msg = data.error || ''
+      if (msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('already exists') || msg.toLowerCase().includes('already been registered')) {
         setError('Esse email já tem uma conta. Clique em "Entrar" para fazer login.')
       } else {
-        setError(signUpError.message || 'Erro ao criar conta.')
+        setError(msg || 'Erro ao criar conta.')
       }
       setLoading(false)
       return
