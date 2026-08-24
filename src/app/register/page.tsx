@@ -16,8 +16,8 @@ export default function RegisterPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  async function handleRegister(e: React.FormEvent) {
-    e.preventDefault()
+  async function handleRegister() {
+    if (!email || !password) return
     setError('')
     setLoading(true)
 
@@ -30,7 +30,7 @@ export default function RegisterPage() {
       })
       data = await res.json()
     } catch (err: any) {
-      setError('Erro de conexão. O serviço pode estar temporariamente indisponível. Tente novamente em alguns instantes.')
+      setError('Erro de conexão. Tente novamente em alguns instantes.')
       setLoading(false)
       return
     }
@@ -53,7 +53,6 @@ export default function RegisterPage() {
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, background: D.bg, fontFamily: 'Montserrat, sans-serif' }}>
       <div style={{ width: '100%', maxWidth: 400 }}>
 
-        {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <img src={LOGO_SRC} alt="Do Bolso pra Tela" style={{ height: 60, objectFit: 'contain', display: 'block', margin: '0 auto' }} />
           <p style={{ color: D.muted, fontSize: 12, marginTop: 8, letterSpacing: 2, textTransform: 'uppercase' }}>Gerador de Roteiros</p>
@@ -63,27 +62,40 @@ export default function RegisterPage() {
           <h1 style={{ fontSize: 20, fontWeight: 700, color: D.text, marginBottom: 4 }}>Criar conta</h1>
           <p style={{ color: D.muted, fontSize: 13, marginBottom: 24 }}>Preencha seus dados para começar</p>
 
-          <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div>
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 6, color: D.muted, textTransform: 'uppercase', letterSpacing: 0.5 }}>Email</label>
-              <input type="email" required value={email} onChange={e => setEmail(e.target.value)}
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
                 placeholder="seu@email.com"
+                autoComplete="email"
                 style={{ width: '100%', background: D.input, border: `1px solid ${D.inputBorder}`, borderRadius: 8, padding: '10px 12px', fontSize: 14, color: D.text, outline: 'none', boxSizing: 'border-box' }} />
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 6, color: D.muted, textTransform: 'uppercase', letterSpacing: 0.5 }}>Senha</label>
-              <input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)}
+              <input
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
                 placeholder="Mínimo 6 caracteres"
+                autoComplete="new-password"
                 style={{ width: '100%', background: D.input, border: `1px solid ${D.inputBorder}`, borderRadius: 8, padding: '10px 12px', fontSize: 14, color: D.text, outline: 'none', boxSizing: 'border-box' }} />
             </div>
 
-            {error && <p style={{ color: '#f87171', fontSize: 13 }}>{error}</p>}
+            {error && (
+              <p style={{ color: '#f87171', fontSize: 13, background: '#3b1010', borderRadius: 8, padding: '10px 12px', margin: 0 }}>{error}</p>
+            )}
 
-            <button type="submit" disabled={loading}
-              style={{ width: '100%', background: D.red, color: '#fff', border: 'none', borderRadius: 8, padding: '12px', fontSize: 14, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1, textTransform: 'uppercase', letterSpacing: 1, marginTop: 4 }}>
+            <button
+              type="button"
+              onClick={handleRegister}
+              disabled={loading || !email || password.length < 6}
+              style={{ width: '100%', background: D.red, color: '#fff', border: 'none', borderRadius: 8, padding: '12px', fontSize: 14, fontWeight: 700, cursor: (loading || !email || password.length < 6) ? 'not-allowed' : 'pointer', opacity: (loading || !email || password.length < 6) ? 0.6 : 1, textTransform: 'uppercase', letterSpacing: 1, marginTop: 4 }}>
               {loading ? 'Criando conta...' : 'Criar conta'}
             </button>
-          </form>
+          </div>
 
           <p style={{ textAlign: 'center', fontSize: 13, marginTop: 20, color: D.muted }}>
             Já tem conta?{' '}
