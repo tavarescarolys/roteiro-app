@@ -37,7 +37,6 @@ export default function RegisterPage() {
       return
     }
 
-    await supabase.auth.signInWithPassword({ email, password })
     router.push('/onboarding')
   }
 
