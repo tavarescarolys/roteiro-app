@@ -23,10 +23,17 @@ export async function POST(req: NextRequest) {
     }
   )
 
-  const { error } = await supabase.auth.signUp({ email, password })
+  const { error: signUpError } = await supabase.auth.signUp({ email, password })
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 })
+  if (signUpError) {
+    return NextResponse.json({ error: signUpError.message }, { status: 400 })
+  }
+
+  // Faz login imediatamente para garantir todos os cookies de sessão
+  const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
+
+  if (signInError) {
+    return NextResponse.json({ error: signInError.message }, { status: 400 })
   }
 
   return response
