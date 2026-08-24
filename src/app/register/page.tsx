@@ -30,6 +30,7 @@ export default function RegisterPage() {
 
     if (!res.ok) {
       const msg = data.error || ''
+      alert('ERRO CADASTRO: ' + (msg || 'sem mensagem') + ' | status: ' + res.status)
       if (msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('already exists') || msg.toLowerCase().includes('already been registered')) {
         setError('Esse email já tem uma conta. Clique em "Entrar" para fazer login.')
       } else {
@@ -38,6 +39,7 @@ export default function RegisterPage() {
       setLoading(false)
       return
     }
+    alert('SUCESSO - indo para onboarding')
 
     window.location.href = '/onboarding'
   }
