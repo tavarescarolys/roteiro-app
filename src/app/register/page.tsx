@@ -21,16 +21,22 @@ export default function RegisterPage() {
     setError('')
     setLoading(true)
 
-    const res = await fetch('/api/auth/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    })
-    const data = await res.json()
+    let res: Response, data: any
+    try {
+      res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      })
+      data = await res.json()
+    } catch (err: any) {
+      setError('Erro de conexão. O serviço pode estar temporariamente indisponível. Tente novamente em alguns instantes.')
+      setLoading(false)
+      return
+    }
 
     if (!res.ok) {
       const msg = data.error || ''
-      alert('ERRO CADASTRO: ' + (msg || 'sem mensagem') + ' | status: ' + res.status)
       if (msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('already exists') || msg.toLowerCase().includes('already been registered')) {
         setError('Esse email já tem uma conta. Clique em "Entrar" para fazer login.')
       } else {
@@ -39,7 +45,6 @@ export default function RegisterPage() {
       setLoading(false)
       return
     }
-    alert('SUCESSO - indo para onboarding')
 
     window.location.href = '/onboarding'
   }
