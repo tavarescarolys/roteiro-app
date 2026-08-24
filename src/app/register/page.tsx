@@ -37,7 +37,7 @@ export default function RegisterPage() {
       return
     }
 
-    router.push('/onboarding')
+    window.location.href = '/onboarding'
   }
 
   return (
