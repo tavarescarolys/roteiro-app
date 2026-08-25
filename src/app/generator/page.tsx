@@ -78,6 +78,7 @@ export default function GeneratorPage() {
   const [duration, setDuration] = useState('')
   const [objective, setObjective] = useState('')
   const [scriptCount, setScriptCount] = useState<number | null>(null)
+  const [userName, setUserName] = useState('')
   const [blocks, setBlocks] = useState<Block[]>([])
   const [editingIdx, setEditingIdx] = useState<number | null>(null)
   const [editText, setEditText] = useState('')
@@ -89,12 +90,19 @@ export default function GeneratorPage() {
   const loadingTimer = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
-    async function fetchCount() {
+    async function fetchData() {
       const supabase = createClient()
-      const { count } = await supabase.from('scripts').select('id', { count: 'exact', head: true })
+      const [{ count }, { data: profile }] = await Promise.all([
+        supabase.from('scripts').select('id', { count: 'exact', head: true }),
+        supabase.from('voice_profiles').select('profile_text').single(),
+      ])
       setScriptCount(count ?? 0)
+      if (profile?.profile_text) {
+        const match = profile.profile_text.match(/^Nome:\s*(.+)/m)
+        if (match) setUserName(match[1].trim())
+      }
     }
-    fetchCount()
+    fetchData()
   }, [blocks])
 
   function startLoadingAnim() {
@@ -212,6 +220,15 @@ export default function GeneratorPage() {
       </nav>
 
       <div style={{ maxWidth: 700, margin: '0 auto', padding: '28px 16px' }}>
+
+        {userName && (
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: D.text, marginBottom: 24 }}>
+            Bora criar um roteiro,{' '}
+            <span style={{ color: D.red }}>{userName}</span>
+            {' '}🎬
+          </h1>
+        )}
+
         <form onSubmit={handleGenerate}>
 
           {/* Briefing */}
