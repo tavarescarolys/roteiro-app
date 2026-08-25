@@ -77,6 +77,7 @@ export default function GeneratorPage() {
   const [platform, setPlatform] = useState('')
   const [duration, setDuration] = useState('')
   const [objective, setObjective] = useState('')
+  const [ctas, setCtas] = useState<string[]>([])
   const [scriptCount, setScriptCount] = useState<number | null>(null)
   const [userName, setUserName] = useState('')
   const [blocks, setBlocks] = useState<Block[]>([])
@@ -155,7 +156,7 @@ export default function GeneratorPage() {
     const res = await fetch('/api/generate-script', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ platform, theme, duration, objective, sentimento }),
+      body: JSON.stringify({ platform, theme, duration, objective, sentimento, ctas }),
     })
     stopLoadingAnim()
     const data = await res.json()
@@ -310,6 +311,33 @@ export default function GeneratorPage() {
                   <option value="Direto — objetivo, sem rodeios">🎯 Direto ao ponto</option>
                 </select>
               </div>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <div style={{ background: D.card, borderRadius: 14, padding: 24, marginBottom: 14, border: `1px solid ${D.border}` }}>
+            <h2 style={{ fontWeight: 700, fontSize: 14, marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1, color: D.muted }}>Call to action</h2>
+            <p style={{ fontSize: 12, color: D.muted, marginBottom: 14 }}>Selecione o que você quer que o público faça ao final. Pode escolher mais de um.</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {[
+                { id: 'salvar', label: '🔖 Salvar o vídeo' },
+                { id: 'compartilhar', label: '↗ Compartilhar' },
+                { id: 'comentar', label: '💬 Comentar' },
+                { id: 'marcar_amigo', label: '👥 Marcar um amigo' },
+                { id: 'seguir', label: '➕ Seguir o perfil' },
+                { id: 'link_bio', label: '🔗 Clicar no link da bio' },
+                { id: 'responder', label: '✍️ Responder uma pergunta' },
+                { id: 'dm', label: '📩 Mandar mensagem' },
+              ].map(opt => {
+                const selected = ctas.includes(opt.id)
+                return (
+                  <button key={opt.id} type="button"
+                    onClick={() => setCtas(prev => selected ? prev.filter(c => c !== opt.id) : [...prev, opt.id])}
+                    style={{ fontSize: 13, padding: '7px 14px', borderRadius: 8, border: `1px solid ${selected ? D.red : D.border}`, background: selected ? `${D.red}22` : 'none', color: selected ? D.text : D.muted, cursor: 'pointer', fontWeight: selected ? 700 : 400, transition: 'all 0.15s' }}>
+                    {opt.label}
+                  </button>
+                )
+              })}
             </div>
           </div>
 

@@ -6,7 +6,7 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 export async function POST(req: NextRequest) {
   try {
-    const { platform, theme, duration, objective, sentimento } = await req.json()
+    const { platform, theme, duration, objective, sentimento, ctas } = await req.json()
 
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -110,7 +110,10 @@ ${theme}
 Plataforma: ${platform}
 Duração: ${duration}
 Objetivo: ${objective}
-Sentimento: ${sentimento}`
+Sentimento: ${sentimento}
+CTA escolhido pelo criador: ${ctas && ctas.length > 0 ? ctas.join(', ') : 'a critério do algoritmo da plataforma'}
+
+IMPORTANTE: o CTA do roteiro deve refletir EXATAMENTE o que o criador escolheu acima. Se escolheu "salvar", o fechamento pede para salvar. Se escolheu "comentar", termina com uma pergunta que convida comentário. Se escolheu mais de um, priorize o primeiro e mencione o segundo de forma natural.`
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
