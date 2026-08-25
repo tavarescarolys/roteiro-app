@@ -223,8 +223,8 @@ export default function GeneratorPage() {
 
         {userName && (
           <h1 style={{ fontSize: 22, fontWeight: 700, color: D.text, marginBottom: 24 }}>
-            Bora criar um roteiro,{' '}
-            <span style={{ color: D.red }}>{userName}</span>
+            Bora criar um roteiro
+            <span style={{ color: D.red }}>, {userName}</span>
             {' '}🎬
           </h1>
         )}
