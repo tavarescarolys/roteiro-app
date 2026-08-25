@@ -81,6 +81,7 @@ export default function GeneratorPage() {
   const [scriptCount, setScriptCount] = useState<number | null>(null)
   const [userName, setUserName] = useState('')
   const [blocks, setBlocks] = useState<Block[]>([])
+  const [scriptTitle, setScriptTitle] = useState('')
   const [editingIdx, setEditingIdx] = useState<number | null>(null)
   const [editText, setEditText] = useState('')
   const [regenIdx, setRegenIdx] = useState<number | null>(null)
@@ -162,6 +163,7 @@ export default function GeneratorPage() {
     const data = await res.json()
     if (!res.ok) { setError(data.error || 'Erro ao gerar roteiro.'); setLoading(false); return }
     setBlocks(parseScript(data.content))
+    setScriptTitle(assunto.split('\n')[0].slice(0, 80))
     setLoading(false)
   }
 
@@ -189,14 +191,23 @@ export default function GeneratorPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap');
         @media print {
+          @page { margin: 20mm 18mm; size: A4; }
           body * { visibility: hidden !important; }
           #script-print, #script-print * { visibility: visible !important; }
-          #script-print { position: fixed; top: 0; left: 0; width: 100%; padding: 32px; background: white; }
+          #script-print {
+            position: absolute; top: 0; left: 0;
+            width: 100%; padding: 40px;
+            background: white !important;
+            border: none !important; border-radius: 0 !important;
+            font-family: Montserrat, sans-serif;
+          }
           .no-print { display: none !important; }
-          .direction-block { color: #666; font-style: italic; border-top: 1px dashed #ccc; padding: 4px 0; }
-          .speech-block { border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; page-break-inside: avoid; }
+          .print-title { display: block !important; font-size: 18px; font-weight: 700; color: #111; margin-bottom: 4px; }
+          .print-meta { display: block !important; font-size: 11px; color: #888; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 12px; }
+          .direction-block { color: #888 !important; font-style: italic; font-size: 11px; border-top: 1px dashed #ddd !important; padding: 6px 0; margin: 4px 0; }
+          .speech-block { border-radius: 6px; padding: 10px 14px; margin-bottom: 10px; page-break-inside: avoid; }
           .emotion-label { display: block !important; font-size: 10px; font-weight: 700; letter-spacing: 1px; margin-bottom: 4px; }
-          .speech-text { font-size: 13px; line-height: 1.6; }
+          .speech-text { font-size: 13px; line-height: 1.7; }
         }
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes progress-pulse { 0%,100% { opacity:.6 } 50% { opacity:1 } }
@@ -369,6 +380,13 @@ export default function GeneratorPage() {
         {/* Script output */}
         {blocks.length > 0 && (
           <div id="script-print" style={{ background: D.card, borderRadius: 14, padding: 24, marginTop: 20, border: `1px solid ${D.border}` }}>
+
+            {/* Cabeçalho visível só no PDF */}
+            <div style={{ position: 'absolute', visibility: 'hidden', height: 0, overflow: 'hidden' }} className="print-title">{scriptTitle || 'Roteiro'}</div>
+            <div style={{ position: 'absolute', visibility: 'hidden', height: 0, overflow: 'hidden' }} className="print-meta">
+              {[platform, duration, objective].filter(Boolean).join(' · ')} — Do Bolso pra Tela
+            </div>
+
             <div className="no-print" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
               <h2 style={{ fontWeight: 700, fontSize: 14, textTransform: 'uppercase', letterSpacing: 1, color: D.muted }}>Roteiro</h2>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
