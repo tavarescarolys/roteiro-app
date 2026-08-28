@@ -123,7 +123,7 @@ export default function OnboardingPage() {
       { onConflict: 'user_id' }
     )
     if (error) { setError('Erro ao salvar perfil.'); return }
-    router.push('/generator')
+    window.location.href = '/generator'
   }
 
   const timerColor = secondsLeft <= 10 ? '#ef4444' : secondsLeft <= 20 ? '#f59e0b' : '#22c55e'

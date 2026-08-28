@@ -41,7 +41,7 @@ export default function LoginPage() {
         .select('id')
         .eq('user_id', user.id)
         .single()
-      router.push(profile ? '/generator' : '/onboarding')
+      window.location.href = profile ? '/generator' : '/onboarding'
     }
   }
 
